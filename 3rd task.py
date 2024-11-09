@@ -108,12 +108,32 @@ def RusselsMethod(supply, cost, demand_copy,suppliesUsed_copy):
     costs = np.copy(cost)
     demand = np.copy(demand_copy)
     suppliesUsed = np.copy(suppliesUsed_copy)
-    u_array = np.array(getUarr(costs))
-    v_array = np.array(getVarr(costs))
-    delta_array= np.zeros((3,4),float)
-    print(u_array)
-    print(v_array)
-    for 
+    while np.any(supplies) and np.any(demand):
+        getUarr(costs)
+        getVarr(costs)
+        u_array = np.array(getUarr(costs)) # rows - 3
+        v_array = np.array(getVarr(costs)) # cols- 4
+        delta_array= np.zeros((3,4),int)
+        for a in range(3):
+            for b in range(4):
+                delta_array[a][b] = costs[a][b] - u_array[a] - v_array[b]
+        min_delta= delta_array.min()
+        min_delta_r,min_delta_c = np.where(delta_array==min_delta)
+        min_row = int(min_delta_r[0])
+        min_col =  int( min_delta_c[0])
+        if supplies[min_row]<=demand[min_row]:
+            suppliesUsed[min_row][min_col] += supplies[min_row]
+            costs[min_row][min_col] += 10000
+            demand[min_col] -=supplies[min_row]
+            supplies[min_row] = 0
+        else:
+            suppliesUsed[min_row][min_col] += demand[min_col]
+            costs[min_row][min_col] += 10000
+            supplies[min_row]-= demand[min_col]
+            demand[min_col] = 0
+    print("Russels method")
+
+    print(suppliesUsed)
 def getUarr(cost):
     costs = np.copy(cost)
     u_array=[0,0,0]
@@ -123,9 +143,11 @@ def getUarr(cost):
 def getVarr(cost):
     costs = np.copy(cost).transpose()
     v_array=[0,0,0,0]
+
     for i in range(4):
+
         v_array[i] = max(costs[i])
     return v_array
-# VogelMethod(supplies, costs, demand, suppliesUsed, 3, 4)
-# NorthWestMethod(supplies,costs,demand,suppliesUsed,3,4)
+VogelMethod(supplies, costs, demand, suppliesUsed, 3, 4)
+NorthWestMethod(supplies,costs,demand,suppliesUsed,3,4)
 RusselsMethod(supplies,costs,demand,suppliesUsed)
